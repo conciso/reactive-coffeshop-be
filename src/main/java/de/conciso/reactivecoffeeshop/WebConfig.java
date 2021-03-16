@@ -1,5 +1,6 @@
 package de.conciso.reactivecoffeeshop;
 
+import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
 import de.conciso.reactivecoffeeshop.model.CoffeeState;
 import de.conciso.reactivecoffeeshop.websocket.CoffeeWebsocketHandler;
@@ -21,19 +22,20 @@ import java.util.Map;
 public class WebConfig implements WebFluxConfigurer {
 
     @Bean
-    public Flux<Coffee> coffeeChanges() {
+    public Flux<Coffee> coffeeChanges(CoffeeRepository coffeeRepository) {
         return Flux.interval(Duration.ofSeconds(10))
                 .map(index -> Coffee.builder()
                         .coffeeType("Type" + index)
                         .customerName("Customer" + index)
                         .state(CoffeeState.ORDERED)
-                        .build());
+                        .build())
+                .flatMap(coffeeRepository::save);
     }
 
     @Bean
-    public HandlerMapping handlerMapping(Flux<Coffee> coffeeChanges) {
+    public HandlerMapping handlerMapping(CoffeeRepository coffeeRepository) {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/coffee", new CoffeeWebsocketHandler(coffeeChanges));
+        map.put("/coffee", new CoffeeWebsocketHandler(coffeeRepository));
         int order = -1; // before annotated controllers
 
         return new SimpleUrlHandlerMapping(map, order);
