@@ -24,17 +24,18 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
     public Mono<Void> handle(WebSocketSession session) {
         return session.send(coffeeRepository.findAll()
                 .concatWith(coffeeSink.autoConnect())
+                .map(CoffeeMessage::from)
                 .flatMap(this::writeJson)
                 .map(session::textMessage));
     }
 
-    private Mono<String> writeJson(Coffee coffee) {
+    private Mono<String> writeJson(CoffeeMessage coffee) {
         return Mono.fromCallable(() -> writeValueAsString(coffee))
                 .onErrorResume(WrappedJsonProcessingException.class, exception -> Mono.error(exception.getCause()))
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-    private String writeValueAsString(Coffee coffee) {
+    private String writeValueAsString(CoffeeMessage coffee) {
         try {
             return objectMapper.writeValueAsString(coffee);
         } catch (JsonProcessingException jsonProcessingException) {
