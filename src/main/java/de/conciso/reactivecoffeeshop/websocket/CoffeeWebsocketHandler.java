@@ -31,7 +31,7 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
 
     private Mono<String> writeJson(CoffeeMessage coffee) {
         return Mono.fromCallable(() -> writeValueAsString(coffee))
-                .onErrorResume(WrappedJsonProcessingException.class, exception -> Mono.error(exception.getCause()))
+                .onErrorMap(WrappedJsonProcessingException.class, RuntimeException::getCause)
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
