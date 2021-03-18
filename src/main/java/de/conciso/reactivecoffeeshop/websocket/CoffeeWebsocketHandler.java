@@ -7,14 +7,14 @@ import de.conciso.reactivecoffeeshop.model.Coffee;
 import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
-import reactor.core.publisher.ConnectableFlux;
 import reactor.core.publisher.Mono;
+import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
 @AllArgsConstructor
 public class CoffeeWebsocketHandler implements WebSocketHandler {
 
-    private final ConnectableFlux<Coffee> coffeeSink;
+    private final Sinks.Many<Coffee> coffeeSink;
 
     private final CoffeeRepository coffeeRepository;
 
@@ -23,7 +23,7 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         return session.send(coffeeRepository.findAll()
-                .concatWith(coffeeSink.autoConnect())
+                .concatWith(coffeeSink.asFlux())
                 .map(CoffeeMessage::from)
                 .flatMap(this::writeJson)
                 .map(session::textMessage));

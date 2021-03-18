@@ -1,5 +1,7 @@
 package de.conciso.reactivecoffeeshop;
 
+import static reactor.util.concurrent.Queues.SMALL_BUFFER_SIZE;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.conciso.reactivecoffeeshop.core.CoffeeChangeProducer;
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
@@ -22,7 +24,7 @@ public class WebConfig implements WebFluxConfigurer {
 
     @Bean
     public Sinks.Many<Coffee> coffeeSink() {
-        return Sinks.many().multicast().onBackpressureBuffer();
+        return Sinks.many().multicast().onBackpressureBuffer(SMALL_BUFFER_SIZE, false);
     }
 
     @Bean
@@ -36,7 +38,7 @@ public class WebConfig implements WebFluxConfigurer {
                                          CoffeeRepository coffeeRepository,
                                          ObjectMapper objectMapper) {
         Map<String, WebSocketHandler> map = new HashMap<>();
-        map.put("/ws/coffee", new CoffeeWebsocketHandler(coffeeSink.asFlux().publish(), coffeeRepository, objectMapper));
+        map.put("/ws/coffee", new CoffeeWebsocketHandler(coffeeSink, coffeeRepository, objectMapper));
         int order = -1; // before annotated controllers
 
         return new SimpleUrlHandlerMapping(map, order);
