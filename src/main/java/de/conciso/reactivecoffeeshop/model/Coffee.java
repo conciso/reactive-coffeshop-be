@@ -1,5 +1,6 @@
 package de.conciso.reactivecoffeeshop.model;
 
+import de.conciso.reactivecoffeeshop.rest.CoffeeOrder;
 import lombok.Builder;
 import lombok.ToString;
 import lombok.Value;
@@ -14,4 +15,12 @@ public class Coffee {
     String coffeeType;
     String customerName;
     CoffeeState state;
+
+    public static Coffee fromOrder(CoffeeOrder coffeeOrder) {
+        return Coffee.builder()
+                .coffeeType(coffeeOrder.getCoffeeType())
+                .customerName(coffeeOrder.getCustomerName())
+                .state(CoffeeState.ORDERED)
+                .build();
+    }
 }

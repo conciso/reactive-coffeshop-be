@@ -3,6 +3,7 @@ package de.conciso.reactivecoffeeshop;
 import de.conciso.reactivecoffeeshop.core.CoffeeChangeProducer;
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
+import de.conciso.reactivecoffeeshop.rest.CoffeeController;
 import de.conciso.reactivecoffeeshop.websocket.CoffeeWebsocketHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,6 @@ import java.util.Map;
 
 @Configuration
 @EnableWebFlux
-@EnableScheduling
 public class WebConfig implements WebFluxConfigurer {
 
     @Bean

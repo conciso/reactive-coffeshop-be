@@ -2,7 +2,6 @@ package de.conciso.reactivecoffeeshop.websocket;
 
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
-import de.conciso.reactivecoffeeshop.model.CoffeeState;
 import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -19,7 +18,7 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         return session.send(coffeeRepository.findAll()
-                .concatWith(coffeeSink.asFlux())
+                .concatWith(coffeeSink.asFlux().cache())
                 .map(Coffee::toString).map(session::textMessage));
     }
 }
