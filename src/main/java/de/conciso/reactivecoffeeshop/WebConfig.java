@@ -28,8 +28,9 @@ public class WebConfig implements WebFluxConfigurer {
     }
 
     @Bean
-    public CoffeeChangeProducer produceCoffee(Sinks.Many<Coffee> coffeeSink) {
-        return new CoffeeChangeProducer(coffeeSink);
+    public CoffeeChangeProducer produceCoffee(CoffeeRepository coffeeRepository,
+                                              Sinks.Many<Coffee> coffeeSink) {
+        return new CoffeeChangeProducer(coffeeRepository, coffeeSink);
     }
 
     @Bean

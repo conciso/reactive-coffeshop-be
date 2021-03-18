@@ -5,6 +5,7 @@ services:
   coffeedb:
     image: postgres:11-alpine
     ports: [ 5432:5432 ]
+    command: ["postgres", "-c", "log_statement=all"]
     environment:
       - POSTGRES_USER=coffee
       - POSTGRES_PASSWORD=coffee

@@ -2,6 +2,7 @@ package de.conciso.reactivecoffeeshop.websocket;
 
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
+import de.conciso.reactivecoffeeshop.model.CoffeeState;
 import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;

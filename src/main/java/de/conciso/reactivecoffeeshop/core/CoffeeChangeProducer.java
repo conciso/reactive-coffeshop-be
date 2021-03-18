@@ -1,5 +1,6 @@
 package de.conciso.reactivecoffeeshop.core;
 
+import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
 import de.conciso.reactivecoffeeshop.model.CoffeeState;
 import lombok.AllArgsConstructor;
@@ -9,15 +10,17 @@ import reactor.core.publisher.Sinks;
 @AllArgsConstructor
 public class CoffeeChangeProducer {
 
+    CoffeeRepository coffeeRepository;
+
     Sinks.Many<Coffee> coffeeSink;
 
     @Scheduled(fixedDelay = 5000)
     public void addCoffee() {
-        coffeeSink.tryEmitNext(Coffee.builder()
+        coffeeRepository.save(Coffee.builder()
                 .coffeeType("Cappuccino")
                 .customerName("Lars")
                 .state(CoffeeState.ORDERED)
-                .build());
+                .build()).map(coffeeSink::tryEmitNext).block();
     }
 
 }
