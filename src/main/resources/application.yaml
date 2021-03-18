@@ -7,3 +7,5 @@ spring:
     url: jdbc:postgresql://localhost:5432/coffee
     user: coffee
     password: coffee
+
+logging.level.web: DEBUG
