@@ -5,15 +5,11 @@ import de.conciso.reactivecoffeeshop.model.Coffee;
 import de.conciso.reactivecoffeeshop.model.CoffeeState;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-@RestController("/api")
+@RestController
 @AllArgsConstructor
 public class CoffeeController {
 
@@ -21,7 +17,7 @@ public class CoffeeController {
 
     private final Sinks.Many<Coffee> coffeeSink;
 
-    @PostMapping(path = "/coffee",
+    @PostMapping(path = "/api/coffee",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<Coffee> orderCoffee(@RequestBody CoffeeOrder coffeeOrder) {
@@ -29,7 +25,7 @@ public class CoffeeController {
                 .doOnNext(coffeeSink::tryEmitNext);
     }
 
-    @PutMapping(path = "/coffee/brewing/{coffeeType}",
+    @PutMapping(path = "/api/coffee/brewing/{coffeeType}",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<Coffee> switchToBrewing(@PathVariable("coffeeType") String coffeeType) {
