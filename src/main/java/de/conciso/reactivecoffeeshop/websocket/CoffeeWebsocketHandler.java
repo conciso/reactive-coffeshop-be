@@ -26,8 +26,8 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
                 .map(coffee -> CoffeeMessage.from(coffee, false))
                 .concatWith(coffeeSink.asFlux())
                 .flatMap(this::writeJson)
-                .onErrorResume(exeption -> {
-                    exeption.printStackTrace();
+                .onErrorResume(exception -> {
+                    exception.printStackTrace();
                     return Flux.empty();
                 })
                 .map(session::textMessage));
