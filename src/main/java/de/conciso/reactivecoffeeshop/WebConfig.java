@@ -3,9 +3,8 @@ package de.conciso.reactivecoffeeshop;
 import static reactor.util.concurrent.Queues.SMALL_BUFFER_SIZE;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.conciso.reactivecoffeeshop.core.CoffeeChangeProducer;
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
-import de.conciso.reactivecoffeeshop.model.Coffee;
+import de.conciso.reactivecoffeeshop.websocket.CoffeeMessage;
 import de.conciso.reactivecoffeeshop.websocket.CoffeeWebsocketHandler;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,18 +22,12 @@ import reactor.core.publisher.Sinks;
 public class WebConfig implements WebFluxConfigurer {
 
     @Bean
-    public Sinks.Many<Coffee> coffeeSink() {
+    public Sinks.Many<CoffeeMessage> coffeeSink() {
         return Sinks.many().multicast().onBackpressureBuffer(SMALL_BUFFER_SIZE, false);
     }
 
     @Bean
-    public CoffeeChangeProducer produceCoffee(CoffeeRepository coffeeRepository,
-                                              Sinks.Many<Coffee> coffeeSink) {
-        return new CoffeeChangeProducer(coffeeRepository, coffeeSink);
-    }
-
-    @Bean
-    public HandlerMapping handlerMapping(Sinks.Many<Coffee> coffeeSink,
+    public HandlerMapping handlerMapping(Sinks.Many<CoffeeMessage> coffeeSink,
                                          CoffeeRepository coffeeRepository,
                                          ObjectMapper objectMapper) {
         Map<String, WebSocketHandler> map = new HashMap<>();

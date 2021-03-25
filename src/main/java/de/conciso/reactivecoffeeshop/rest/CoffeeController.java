@@ -27,7 +27,7 @@ public class CoffeeController {
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<Coffee> orderCoffee(@RequestBody CoffeeOrder coffeeOrder) {
         return coffeeRepository.save(Coffee.fromOrder(coffeeOrder))
-                .doOnNext(coffee -> coffeeSink.tryEmitNext(CoffeeMessage.from(coffee, true)));
+                .doOnNext(coffee -> coffeeSink.tryEmitNext(CoffeeMessage.from(coffee, false)));
     }
 
     @PutMapping(path = "/api/coffee/processing/{coffeeType}",
