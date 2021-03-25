@@ -6,6 +6,7 @@ import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
@@ -25,6 +26,10 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
                 .map(coffee -> CoffeeMessage.from(coffee, false))
                 .concatWith(coffeeSink.asFlux())
                 .flatMap(this::writeJson)
+                .onErrorResume(exeption -> {
+                    exeption.printStackTrace();
+                    return Flux.empty();
+                })
                 .map(session::textMessage));
     }
 
