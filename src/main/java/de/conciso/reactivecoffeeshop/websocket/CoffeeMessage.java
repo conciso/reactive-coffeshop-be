@@ -15,11 +15,14 @@ public class CoffeeMessage {
 
     CoffeeState state;
 
+    boolean update;
+
     public static CoffeeMessage from(Coffee coffee) {
         return CoffeeMessage.builder()
                 .coffeeType(coffee.getCoffeeType())
                 .customerName(coffee.getCustomerName())
                 .state(coffee.getState())
+                .update(coffee.isUpdate())
                 .build();
     }
 

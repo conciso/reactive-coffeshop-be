@@ -4,6 +4,7 @@ import de.conciso.reactivecoffeeshop.rest.CoffeeOrder;
 import lombok.Builder;
 import lombok.Value;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 
 @Value
 @Builder(toBuilder = true)
@@ -17,6 +18,9 @@ public class Coffee {
     String customerName;
 
     CoffeeState state;
+
+    @Transient
+    boolean update;
 
     public static Coffee fromOrder(CoffeeOrder coffeeOrder) {
         return Coffee.builder()
