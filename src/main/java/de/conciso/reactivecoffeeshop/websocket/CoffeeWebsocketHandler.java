@@ -2,35 +2,22 @@ package de.conciso.reactivecoffeeshop.websocket;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import reactor.core.publisher.Sinks;
 import reactor.core.scheduler.Schedulers;
 
-@AllArgsConstructor
 public class CoffeeWebsocketHandler implements WebSocketHandler {
-
-    private final Sinks.Many<CoffeeMessage> coffeeSink;
-
-    private final CoffeeRepository coffeeRepository;
 
     private final ObjectMapper objectMapper;
 
+    public CoffeeWebsocketHandler(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
+
     @Override
     public Mono<Void> handle(WebSocketSession session) {
-        return session.send(coffeeRepository.findAll()
-                .map(coffee -> CoffeeMessage.from(coffee, false))
-                .concatWith(coffeeSink.asFlux())
-                .flatMap(this::writeJson)
-                .onErrorResume(exception -> {
-                    exception.printStackTrace();
-                    return Flux.empty();
-                })
-                .map(session::textMessage));
+        return Mono.empty();
     }
 
     private Mono<String> writeJson(CoffeeMessage coffee) {
