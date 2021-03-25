@@ -3,6 +3,7 @@ package de.conciso.reactivecoffeeshop.rest;
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
 import de.conciso.reactivecoffeeshop.model.Coffee;
 import de.conciso.reactivecoffeeshop.model.CoffeeState;
+import de.conciso.reactivecoffeeshop.websocket.CoffeeMessage;
 import lombok.AllArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,14 +20,14 @@ public class CoffeeController {
 
     private final CoffeeRepository coffeeRepository;
 
-    private final Sinks.Many<Coffee> coffeeSink;
+    private final Sinks.Many<CoffeeMessage> coffeeSink;
 
     @PostMapping(path = "/api/coffee",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE)
     public Mono<Coffee> orderCoffee(@RequestBody CoffeeOrder coffeeOrder) {
         return coffeeRepository.save(Coffee.fromOrder(coffeeOrder))
-                .doOnNext(coffeeSink::tryEmitNext);
+                .doOnNext(coffee -> coffeeSink.tryEmitNext(CoffeeMessage.from(coffee, true)));
     }
 
     @PutMapping(path = "/api/coffee/processing/{coffeeType}",
@@ -38,10 +39,7 @@ public class CoffeeController {
                         .state(CoffeeState.PROCESSING)
                         .build())
                 .flatMap(coffeeRepository::save)
-                .map(coffee -> coffee.toBuilder()
-                        .update(true)
-                        .build())
-                .doOnNext(coffeeSink::tryEmitNext);
+                .doOnNext(coffee -> coffeeSink.tryEmitNext(CoffeeMessage.from(coffee, true)));
     }
 
     @PutMapping(path = "/api/coffee/brewed/{coffeeType}",
@@ -53,9 +51,6 @@ public class CoffeeController {
                         .state(CoffeeState.BREWED)
                         .build())
                 .flatMap(coffeeRepository::save)
-                .map(coffee -> coffee.toBuilder()
-                        .update(true)
-                        .build())
-                .doOnNext(coffeeSink::tryEmitNext);
+                .doOnNext(coffee -> coffeeSink.tryEmitNext(CoffeeMessage.from(coffee, true)));
     }
 }

@@ -3,7 +3,6 @@ package de.conciso.reactivecoffeeshop.websocket;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.conciso.reactivecoffeeshop.infra.CoffeeRepository;
-import de.conciso.reactivecoffeeshop.model.Coffee;
 import lombok.AllArgsConstructor;
 import org.springframework.web.reactive.socket.WebSocketHandler;
 import org.springframework.web.reactive.socket.WebSocketSession;
@@ -14,7 +13,7 @@ import reactor.core.scheduler.Schedulers;
 @AllArgsConstructor
 public class CoffeeWebsocketHandler implements WebSocketHandler {
 
-    private final Sinks.Many<Coffee> coffeeSink;
+    private final Sinks.Many<CoffeeMessage> coffeeSink;
 
     private final CoffeeRepository coffeeRepository;
 
@@ -23,8 +22,8 @@ public class CoffeeWebsocketHandler implements WebSocketHandler {
     @Override
     public Mono<Void> handle(WebSocketSession session) {
         return session.send(coffeeRepository.findAll()
+                .map(coffee -> CoffeeMessage.from(coffee, false))
                 .concatWith(coffeeSink.asFlux())
-                .map(CoffeeMessage::from)
                 .flatMap(this::writeJson)
                 .map(session::textMessage));
     }

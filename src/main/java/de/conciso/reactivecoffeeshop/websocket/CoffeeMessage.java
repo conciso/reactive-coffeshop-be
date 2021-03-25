@@ -17,12 +17,12 @@ public class CoffeeMessage {
 
     boolean update;
 
-    public static CoffeeMessage from(Coffee coffee) {
+    public static CoffeeMessage from(Coffee coffee, boolean update) {
         return CoffeeMessage.builder()
                 .coffeeType(coffee.getCoffeeType())
                 .customerName(coffee.getCustomerName())
                 .state(coffee.getState())
-                .update(coffee.isUpdate())
+                .update(update)
                 .build();
     }
 
